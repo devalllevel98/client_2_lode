@@ -21,7 +21,7 @@ class _SplashScreenState extends State<SplashScreennew>
 
 // ========================================
   final String username = 'ClientNewApp';
-  final String repository = 'lodenew'; 
+  final String repository = 'clientnew'; 
   String readmeContent = '';
  Future<void> fetchDatagithub() async {
     try {
